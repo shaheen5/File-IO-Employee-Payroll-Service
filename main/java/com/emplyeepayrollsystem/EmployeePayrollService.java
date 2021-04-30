@@ -17,20 +17,26 @@ public class EmployeePayrollService {
     public static void main(String[] args) {
         ArrayList<EmployeePayrollData> employeePayrollList = new ArrayList<EmployeePayrollData>();
         EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
-        Scanner consoleInputReader = new Scanner(System.in);
-        employeePayrollService.readEmployeePayrollData(consoleInputReader);
+        employeePayrollService.readEmployeePayrollData(IOService.FILE_IO);
         employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
     }
     //method to read data
-    private void readEmployeePayrollData(Scanner consoleInputReader) {
-        System.out.println("Enter Employee Id:");
-        int id=consoleInputReader.nextInt();
-        System.out.println("Enter Employee name:");
-        consoleInputReader.nextLine();
-        String name=consoleInputReader.nextLine();
-        System.out.println("Enter Employee salary:");
-        double salary=consoleInputReader.nextInt();
-        employeePayrollDataList.add(new EmployeePayrollData(id,name,salary));
+    public long readEmployeePayrollData(IOService ioService) {
+        if(ioService.equals(IOService.CONSOLE_IO)) {
+            Scanner consoleInputReader = new Scanner(System.in);
+            System.out.println("Enter Employee Id:");
+            int id=consoleInputReader.nextInt();
+            System.out.println("Enter Employee name:");
+            consoleInputReader.nextLine();
+            String name=consoleInputReader.nextLine();
+            System.out.println("Enter Employee salary:");
+            double salary=consoleInputReader.nextInt();
+            employeePayrollDataList.add(new EmployeePayrollData(id,name,salary));
+        }
+        List<String> employeeList = null;
+        if(ioService.equals(IOService.FILE_IO))
+            employeeList = new EmployeePayrollFileIOService().readData();
+        return employeeList.size();
     }
     //method to write data on console
     public void writeEmployeePayrollData(IOService ioService) {
