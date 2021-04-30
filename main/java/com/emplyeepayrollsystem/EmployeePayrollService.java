@@ -1,5 +1,8 @@
 package com.emplyeepayrollsystem;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,7 +22,7 @@ public class EmployeePayrollService {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService(employeePayrollList);
         Scanner consoleInputReader = new Scanner(System.in);
         employeePayrollService.readEmployeePayrollData(consoleInputReader);
-        employeePayrollService.writeEmployeePayrollData();
+        employeePayrollService.writeEmployeePayrollData(IOService.FILE_IO);
     }
     //method to read data
     private void readEmployeePayrollData(Scanner consoleInputReader) {
@@ -33,7 +36,20 @@ public class EmployeePayrollService {
         employeePayrollDataList.add(new EmployeePayrollData(id,name,salary));
     }
     //method to write data on console
-    private void writeEmployeePayrollData() {
-        System.out.println("\nWriting Employee Payroll Roaster To console::\n"+employeePayrollDataList);
+    public void writeEmployeePayrollData(IOService ioService) {
+        if(ioService.equals(IOService.CONSOLE_IO))
+            System.out.println("\nWriting Employee Payroll Roaster To console::\n"+employeePayrollDataList);
+        else if (ioService.equals(IOService.FILE_IO))
+            new EmployeePayrollFileIOService().writeData(employeePayrollDataList);
+    }
+    //method to count entries in a file
+    public long countEntries() {
+        long entries = 0;
+        try {
+            entries = Files.lines(new File("payroll-file.txt").toPath()).count();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return entries;
     }
 }
