@@ -1,5 +1,6 @@
 package com.fileoperations;
 
+import com.filewatchservice.Java8WatchServiceExample;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -45,5 +46,11 @@ public class NIOFileAPITest {
         Files.newDirectoryStream(playPath).forEach(System.out::println);
         Files.newDirectoryStream(playPath,path->path.toFile().isFile() &&
                                           path.toString().startsWith("temp")).forEach(System.out::println);
+    }
+    @Test
+    public void givenADirectory_WhenWatched_ListsAllTheActivities() throws  IOException{
+        Path dir = Paths.get(HOME+"/"+PLAY_WITH_NIO);
+        Files.list(dir).filter(Files::isRegularFile).forEach(System.out::println);
+        new Java8WatchServiceExample(dir).processEvents();
     }
 }
