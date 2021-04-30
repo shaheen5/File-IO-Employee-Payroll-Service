@@ -1,8 +1,5 @@
 package com.emplyeepayrollsystem;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -43,13 +40,15 @@ public class EmployeePayrollService {
             new EmployeePayrollFileIOService().writeData(employeePayrollDataList);
     }
     //method to count entries in a file
-    public long countEntries() {
-        long entries = 0;
-        try {
-            entries = Files.lines(new File("payroll-file.txt").toPath()).count();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return entries;
+    public long count(IOService ioService) {
+        if(ioService.equals(IOService.FILE_IO))
+            return new EmployeePayrollFileIOService().countEntries();
+        return 0;
+    }
+
+    //method to print entries from a file
+    public void printData(IOService ioService){
+        if(ioService.equals(IOService.FILE_IO))
+            new EmployeePayrollFileIOService().printData();
     }
 }
