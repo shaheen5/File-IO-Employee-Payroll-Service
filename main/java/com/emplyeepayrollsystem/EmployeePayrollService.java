@@ -2,6 +2,7 @@ package com.emplyeepayrollsystem;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
@@ -83,12 +84,18 @@ public class EmployeePayrollService {
         List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
         return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
     }
-    //
+    //read Employee payroll from database having joining date within given range
     public List<EmployeePayrollData> readEmployeePayrollForDateRange(IOService ioService,
                                                                      LocalDate startDate, LocalDate endDate)
                                                                      throws PayrollDatabaseException {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getEmployeeForDateRange(startDate,endDate);
+        return null;
+    }
+    //read the average salary of employee by gender from database
+    public Map<String, Double> readAverageSalaryByGender(IOService ioService) throws PayrollDatabaseException {
+        if(ioService.equals(IOService.DB_IO))
+            return employeePayrollDBService.getAverageSalaryByGender();
         return null;
     }
 }
