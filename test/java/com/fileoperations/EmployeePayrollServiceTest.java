@@ -81,4 +81,16 @@ public class EmployeePayrollServiceTest {
             e.printStackTrace();
         }
     }
+    @Test
+    public void givenNewSalaryForEmployee_WhenUpdatedUsing_PreparedStatement_ShouldSyncWithDatabase(){
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        try {
+            List<EmployeePayrollData> employeePayrollDataList = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+            employeePayrollService.updateEmployeeSalary("Terisa",400000.00);
+            boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+            Assert.assertTrue(result);
+        }catch (PayrollDatabaseException e){
+            e.printStackTrace();
+        }
+    }
 }

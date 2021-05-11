@@ -40,7 +40,19 @@ public class EmployeePayrollDBService {
 
     //update employee salary
     public int updateEmployeeData(String name, double salary) throws PayrollDatabaseException {
-        return this.updateEmployeeDataUsingStatement(name, salary);
+        return this.updateEmployeeDataUsingPreparedStatement(name, salary);
+    }
+    //update employee salary in database using jdbc prepared statement
+    private int updateEmployeeDataUsingPreparedStatement(String name, double salary) throws PayrollDatabaseException {
+        String sql = " UPDATE employee_payroll SET salary = ? WHERE name = ? ";
+        try (Connection connection = this.getConnection()) {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setDouble(1,salary);
+            preparedStatement.setString(2,name);
+            return preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            throw new PayrollDatabaseException("Connection Error Occurred!");
+        }
     }
 
     //update salary using statement object
@@ -56,10 +68,11 @@ public class EmployeePayrollDBService {
     //get employee data for given name
     public List<EmployeePayrollData> getEmployeePayrollData(String name) throws PayrollDatabaseException {
         List<EmployeePayrollData> employeePayrollDataList = new ArrayList<>();
-        String sql = String.format("SELECT * FROM employee_payroll WHERE name= '%s' ;",name);
+        String sql = " SELECT * FROM employee_payroll WHERE name= ? ";
         try (Connection connection = this.getConnection()) {
-            Statement statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            preparedStatement.setString(1,name);
+            ResultSet resultSet = preparedStatement.executeQuery();
             employeePayrollDataList = this.getEmployeePayrollData(resultSet);
         }catch (SQLException e){
             throw new PayrollDatabaseException("Connection Error Occurred!");
