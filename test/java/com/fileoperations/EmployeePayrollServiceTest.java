@@ -2,10 +2,12 @@ package com.fileoperations;
 
 import com.emplyeepayrollsystem.EmployeePayrollData;
 import com.emplyeepayrollsystem.EmployeePayrollService;
+import com.emplyeepayrollsystem.PayrollDatabaseException;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.util.Arrays;
+import java.util.List;
 
 public class EmployeePayrollServiceTest {
     @Test
@@ -52,9 +54,19 @@ public class EmployeePayrollServiceTest {
         Assert.assertEquals(5,entries);
     }
     @Test
-    public void givenFile_OnReadingFromFile_ShouldMatchEmployeeCount(){
+    public void givenFile_OnReadingFromFile_ShouldMatchEmployeeCount() throws PayrollDatabaseException {
         EmployeePayrollService employeePayrollService  = new EmployeePayrollService();
-        long entries = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.FILE_IO);
-        Assert.assertEquals(5,entries);
+        List<EmployeePayrollData> employeePayrollDataList = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.FILE_IO);
+        Assert.assertEquals(5,employeePayrollDataList.size());
+    }
+    @Test
+    public void givenEmployeePayrollInDB_WhenRetrieved_ShouldMatch_EmployeeCount(){
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        try {
+            List<EmployeePayrollData> employeePayrollDataList = employeePayrollService.readEmployeePayrollData(EmployeePayrollService.IOService.DB_IO);
+            Assert.assertEquals(3, employeePayrollDataList.size());
+        }catch (PayrollDatabaseException e){
+            e.printStackTrace();
+        }
     }
 }
