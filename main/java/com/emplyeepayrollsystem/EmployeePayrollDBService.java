@@ -146,14 +146,15 @@ public class EmployeePayrollDBService {
 
     // insert new employee to employee_payroll database after adding details to payroll_details DB
     public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
-                                                     throws PayrollDatabaseException {
+                                                    throws PayrollDatabaseException {
         int employeeId = -1;
         EmployeePayrollData employeePayrollData = null;
         Connection connection = null;
         try {
             connection = this.getConnection();
+            connection.setAutoCommit(false);
         } catch (SQLException e) {
-            e.printStackTrace();
+            throw new PayrollDatabaseException("Connection To Database Failed !");
         }
         try (Statement statement = connection.createStatement()) {
             String sql = String.format("INSERT INTO employee_payroll (name,gender,salary,start) " +
@@ -164,7 +165,12 @@ public class EmployeePayrollDBService {
                 if (resultSet.next()) employeeId = resultSet.getInt(1);
             }
         } catch (SQLException e) {
-            throw new PayrollDatabaseException("Connection To Database Failed !");
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new PayrollDatabaseException("Rollback is Failed !");
+            }
         }
         try (Statement statement = connection.createStatement()) {
             double deductions = salary * 0.2;
@@ -179,7 +185,25 @@ public class EmployeePayrollDBService {
                 employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);
             }
         } catch (SQLException e) {
-            throw new PayrollDatabaseException("Connection Failed!");
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new PayrollDatabaseException("Could Not Roll Back Transaction");
+            }
+        }
+        try {
+            connection.commit();
+        } catch (SQLException ex) {
+            throw new PayrollDatabaseException("Commit Failed!");
+        } finally {
+            if (connection != null) {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    throw new PayrollDatabaseException("Connection is closed !");
+                }
+            }
         }
         return employeePayrollData;
     }
