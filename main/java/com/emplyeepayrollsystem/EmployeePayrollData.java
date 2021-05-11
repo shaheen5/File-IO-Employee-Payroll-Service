@@ -21,4 +21,13 @@ public class EmployeePayrollData {
     public String toString(){
         return "EmployeePayRollData [id="+id+" name="+name+" salary="+salary+"]";
     }
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj) return true;
+        if(obj == null || getClass() != obj.getClass()) return false;
+        EmployeePayrollData that = (EmployeePayrollData) obj;
+        return id   ==  that.id &&
+                Double.compare(salary,that.salary)==0 &&
+                name.equals(that.name);
+    }
 }

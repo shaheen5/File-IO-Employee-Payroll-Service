@@ -55,4 +55,27 @@ public class EmployeePayrollService {
         if(ioService.equals(IOService.FILE_IO))
             new EmployeePayrollFileIOService().printData();
     }
+    //find employee data having given name
+    private EmployeePayrollData getEmployeePayrollData(String name) {
+        return this.employeePayrollDataList.stream()
+                   .filter(employeePayrollDataItem ->employeePayrollDataItem.name.equals(name))
+                   .findFirst()
+                   .orElse(null);
+    }
+
+    //update employee salary in Database and program
+    public void updateEmployeeSalary(String name, double salary) throws PayrollDatabaseException {
+        int result = new EmployeePayrollDBService().updateEmployeeData(name,salary);
+        if(result == 0)
+            throw new PayrollDatabaseException("Update To Database Failed!");
+        EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
+        if(employeePayrollData != null)
+            employeePayrollData.salary = salary;
+    }
+    //check whether database is in sync with employee payroll data in program
+    public boolean checkEmployeePayrollInSyncWithDB(String name) throws PayrollDatabaseException {
+        List<EmployeePayrollData> employeePayrollDataList = new EmployeePayrollDBService().getEmployeePayrollData(name);
+        return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
+    }
+
 }
