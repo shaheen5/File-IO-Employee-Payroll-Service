@@ -6,10 +6,14 @@ import java.util.Scanner;
 public class EmployeePayrollService {
     public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
     private List<EmployeePayrollData> employeePayrollDataList;
+    private static EmployeePayrollDBService employeePayrollDBService;
 
-    public EmployeePayrollService(){}
+    public EmployeePayrollService(){
+        employeePayrollDBService = EmployeePayrollDBService.getInstance();
+    }
 
     public EmployeePayrollService(List<EmployeePayrollData> employeePayrollDataList){
+        this();
         this.employeePayrollDataList = employeePayrollDataList;
     }
     //method to read data
@@ -31,7 +35,7 @@ public class EmployeePayrollService {
             return employeeList;
         }
         if(ioService.equals(IOService.DB_IO)) {
-            this.employeePayrollDataList = new EmployeePayrollDBService().readData();
+            this.employeePayrollDataList = employeePayrollDBService.readData();
             return employeePayrollDataList;
         }
         return null;
@@ -65,7 +69,7 @@ public class EmployeePayrollService {
 
     //update employee salary in Database and program
     public void updateEmployeeSalary(String name, double salary) throws PayrollDatabaseException {
-        int result = new EmployeePayrollDBService().updateEmployeeData(name,salary);
+        int result = employeePayrollDBService.updateEmployeeData(name,salary);
         if(result == 0)
             throw new PayrollDatabaseException("Update To Database Failed!");
         EmployeePayrollData employeePayrollData = this.getEmployeePayrollData(name);
@@ -74,7 +78,7 @@ public class EmployeePayrollService {
     }
     //check whether database is in sync with employee payroll data in program
     public boolean checkEmployeePayrollInSyncWithDB(String name) throws PayrollDatabaseException {
-        List<EmployeePayrollData> employeePayrollDataList = new EmployeePayrollDBService().getEmployeePayrollData(name);
+        List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
         return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
     }
 

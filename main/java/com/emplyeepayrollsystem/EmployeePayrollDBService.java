@@ -6,6 +6,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class EmployeePayrollDBService {
+    private PreparedStatement employeePayrollDataStatement;
+    private static EmployeePayrollDBService employeePayrollDBService;
+
+    private EmployeePayrollDBService(){
+    }
+    public static EmployeePayrollDBService getInstance() {
+        if(employeePayrollDBService == null)
+            employeePayrollDBService = new EmployeePayrollDBService();
+        return employeePayrollDBService;
+    }
+
     //create connection to database and return connection object
     private Connection getConnection() throws SQLException {
         String jdbcURL = "jdbc:mysql://localhost:3306/payroll_service?useSSL=false";
