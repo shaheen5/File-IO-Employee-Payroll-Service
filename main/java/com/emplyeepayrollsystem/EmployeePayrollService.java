@@ -1,9 +1,11 @@
 package com.emplyeepayrollsystem;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Scanner;
 
 public class EmployeePayrollService {
+
     public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
     private List<EmployeePayrollData> employeePayrollDataList;
     private static EmployeePayrollDBService employeePayrollDBService;
@@ -81,5 +83,12 @@ public class EmployeePayrollService {
         List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
         return employeePayrollDataList.get(0).equals(getEmployeePayrollData(name));
     }
-
+    //
+    public List<EmployeePayrollData> readEmployeePayrollForDateRange(IOService ioService,
+                                                                     LocalDate startDate, LocalDate endDate)
+                                                                     throws PayrollDatabaseException {
+        if(ioService.equals(IOService.DB_IO))
+            return employeePayrollDBService.getEmployeeForDateRange(startDate,endDate);
+        return null;
+    }
 }
