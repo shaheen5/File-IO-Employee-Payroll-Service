@@ -119,7 +119,19 @@ public class EmployeePayrollServiceTest {
             employeePayrollService.readEmployeePayrollData(DB_IO);
             Map<String,Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(DB_IO);
             Assert.assertTrue(averageSalaryByGender.get("M").equals(300000.00) &&
-                    averageSalaryByGender.get("F").equals(400000.00));
+                                       averageSalaryByGender.get("F").equals(400000.00));
+        }catch (PayrollDatabaseException e){
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void givenNewEmployee_WhenAdded_ShouldSyncWithDB(){
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        try {
+            employeePayrollService.readEmployeePayrollData(DB_IO);
+            Map<String,Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(DB_IO);
+            employeePayrollService.addEmployeeToPayroll("Mark","M",400000.00,LocalDate.now());
+            boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
         }catch (PayrollDatabaseException e){
             e.printStackTrace();
         }

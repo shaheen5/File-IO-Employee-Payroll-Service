@@ -79,6 +79,7 @@ public class EmployeePayrollService {
         if(employeePayrollData != null)
             employeePayrollData.salary = salary;
     }
+
     //check whether database is in sync with employee payroll data in program
     public boolean checkEmployeePayrollInSyncWithDB(String name) throws PayrollDatabaseException {
         List<EmployeePayrollData> employeePayrollDataList = employeePayrollDBService.getEmployeePayrollData(name);
@@ -97,5 +98,10 @@ public class EmployeePayrollService {
         if(ioService.equals(IOService.DB_IO))
             return employeePayrollDBService.getAverageSalaryByGender();
         return null;
+    }
+    // add new employee to employee payroll
+    public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
+                                     throws PayrollDatabaseException {
+        employeePayrollDataList.add(employeePayrollDBService.addEmployeeToPayroll( name, gender, salary, startDate));
     }
 }
