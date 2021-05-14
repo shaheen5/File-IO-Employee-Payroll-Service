@@ -161,7 +161,8 @@ public class EmployeePayrollDBService {
     }
 
     // insert new employee to employee_payroll database after adding details to payroll_details DB
-    public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
+    public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate,
+                                                    int companyId,String companyName,int[] departmentId)
                                                     throws PayrollDatabaseException {
         int employeeId = -1;
         EmployeePayrollData employeePayrollData = null;
@@ -172,9 +173,17 @@ public class EmployeePayrollDBService {
         } catch (SQLException e) {
             throw new PayrollDatabaseException("Connection To Database Failed !");
         }
+        //insert into company table
         try (Statement statement = connection.createStatement()) {
-            String sql = String.format("INSERT INTO employee_payroll (name,gender,salary,start) " +
-                    "VALUES ('%s','%s',%s,'%s')", name, gender, salary, Date.valueOf(startDate));
+            String sql = String.format("INSERT INTO company VALUES (%s,'%s'); ",companyId,companyName);
+            statement.executeUpdate(sql);
+        }catch (SQLException e){
+            throw new PayrollDatabaseException("Database Insertion Failed!");
+        }
+        //insert into employee payroll table
+        try (Statement statement = connection.createStatement()) {
+            String sql = String.format("INSERT INTO employee_payroll (name,gender,salary,start,company_id) " +
+                    "VALUES ('%s','%s',%s,'%s',%s)", name, gender, salary, Date.valueOf(startDate),companyId);
             int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
             if (rowAffected == 1) {
                 ResultSet resultSet = statement.getGeneratedKeys();
@@ -188,6 +197,7 @@ public class EmployeePayrollDBService {
                 throw new PayrollDatabaseException("Rollback is Failed !");
             }
         }
+        //insert into payroll details table
         try (Statement statement = connection.createStatement()) {
             double deductions = salary * 0.2;
             double taxablePay = salary - deductions;
@@ -201,6 +211,21 @@ public class EmployeePayrollDBService {
                 employeePayrollData = new EmployeePayrollData(employeeId, name, salary, startDate);
             }
         } catch (SQLException e) {
+            e.printStackTrace();
+            try {
+                connection.rollback();
+            } catch (SQLException ex) {
+                throw new PayrollDatabaseException("Could Not Roll Back Transaction");
+            }
+        }
+        //insert into employee_department table
+        try (Statement statement = connection.createStatement()) {
+            for(int i=0;i<departmentId.length;i++){
+                String sql = String.format("Insert Into employee_department (employee_id,department_id) values" +
+                        "(%s,%s)",employeeId,departmentId[i]);
+                statement.executeUpdate(sql);
+            }
+        }catch (SQLException e) {
             e.printStackTrace();
             try {
                 connection.rollback();

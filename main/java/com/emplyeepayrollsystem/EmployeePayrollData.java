@@ -31,17 +31,6 @@ public class EmployeePayrollData {
     }
 
     @Override
-    public String toString() {
-        return "EmployeePayrollData{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", gender=" + gender +
-                ", salary=" + salary +
-                ", startDate=" + startDate +
-                '}';
-    }
-
-    @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
         if(obj == null || getClass() != obj.getClass()) return false;

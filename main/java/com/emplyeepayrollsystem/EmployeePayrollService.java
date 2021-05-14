@@ -100,8 +100,10 @@ public class EmployeePayrollService {
         return null;
     }
     // add new employee to employee payroll
-    public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate)
+    public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate,int companyId,
+                                     String companyName,int[] departmentId)
                                      throws PayrollDatabaseException {
-        employeePayrollDataList.add(employeePayrollDBService.addEmployeeToPayroll( name, gender, salary, startDate));
+        employeePayrollDataList.add(employeePayrollDBService.addEmployeeToPayroll( name, gender, salary, startDate,
+                companyId,companyName,departmentId));
     }
 }
