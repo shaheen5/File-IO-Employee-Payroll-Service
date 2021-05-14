@@ -34,7 +34,7 @@ public class EmployeePayrollDBService {
 
     //read data from database and return list
     public List<EmployeePayrollData> readData() throws PayrollDatabaseException {
-        String sql = "SELECT * FROM employee_payroll";
+        String sql = String.format("SELECT * FROM employee_payroll where is_active = %s;", true);
         return this.getEmployeePayrollDataUsingDB(sql);
     }
 
@@ -56,6 +56,7 @@ public class EmployeePayrollDBService {
             throw new PayrollDatabaseException("Connection Error Occurred!");
         }
     }
+
     //update payroll details when salary is updated simultaneously
     private int updatePayrollDetails(double salary) throws PayrollDatabaseException {
         try (Connection connection = this.getConnection()) {
@@ -65,11 +66,11 @@ public class EmployeePayrollDBService {
             double tax = taxablePay * 0.1;
             double netPay = salary - tax;
             String sql = String.format("UPDATE payroll_details SET basic_pay = %s,deductions = %s," +
-                    "taxable_pay=%s,tax=%s,net_pay=%s ;",salary,deductions,taxablePay,tax,netPay);
+                    "taxable_pay=%s,tax=%s,net_pay=%s ;", salary, deductions, taxablePay, tax, netPay);
             return statement.executeUpdate(sql);
         } catch (SQLException ex) {
-                throw new PayrollDatabaseException("Update To Database Failed!");
-            }
+            throw new PayrollDatabaseException("Update To Database Failed!");
+        }
     }
 
     //update salary using statement object
@@ -162,8 +163,8 @@ public class EmployeePayrollDBService {
 
     // insert new employee to employee_payroll database after adding details to payroll_details DB
     public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate,
-                                                    int companyId,String companyName,int[] departmentId)
-                                                    throws PayrollDatabaseException {
+                                                    int companyId, String companyName, int[] departmentId)
+            throws PayrollDatabaseException {
         int employeeId = -1;
         EmployeePayrollData employeePayrollData = null;
         Connection connection = null;
@@ -175,15 +176,15 @@ public class EmployeePayrollDBService {
         }
         //insert into company table
         try (Statement statement = connection.createStatement()) {
-            String sql = String.format("INSERT INTO company VALUES (%s,'%s'); ",companyId,companyName);
+            String sql = String.format("INSERT INTO company VALUES (%s,'%s'); ", companyId, companyName);
             statement.executeUpdate(sql);
-        }catch (SQLException e){
+        } catch (SQLException e) {
             throw new PayrollDatabaseException("Database Insertion Failed!");
         }
         //insert into employee payroll table
         try (Statement statement = connection.createStatement()) {
             String sql = String.format("INSERT INTO employee_payroll (name,gender,salary,start,company_id) " +
-                    "VALUES ('%s','%s',%s,'%s',%s)", name, gender, salary, Date.valueOf(startDate),companyId);
+                    "VALUES ('%s','%s',%s,'%s',%s)", name, gender, salary, Date.valueOf(startDate), companyId);
             int rowAffected = statement.executeUpdate(sql, statement.RETURN_GENERATED_KEYS);
             if (rowAffected == 1) {
                 ResultSet resultSet = statement.getGeneratedKeys();
@@ -220,12 +221,12 @@ public class EmployeePayrollDBService {
         }
         //insert into employee_department table
         try (Statement statement = connection.createStatement()) {
-            for(int i=0;i<departmentId.length;i++){
+            for (int i = 0; i < departmentId.length; i++) {
                 String sql = String.format("Insert Into employee_department (employee_id,department_id) values" +
-                        "(%s,%s)",employeeId,departmentId[i]);
+                        "(%s,%s)", employeeId, departmentId[i]);
                 statement.executeUpdate(sql);
             }
-        }catch (SQLException e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             try {
                 connection.rollback();
@@ -247,5 +248,17 @@ public class EmployeePayrollDBService {
             }
         }
         return employeePayrollData;
+    }
+
+    //update is active field of employee to false in DB
+    public int removeEmployeeFromPayroll(int id) throws PayrollDatabaseException {
+        List<EmployeePayrollData> employeePayrollDataList = null;
+        String sql = String.format("UPDATE employee_payroll SET is_active = %s WHERE id = %s ;", false, id);
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            return statement.executeUpdate(sql);
+        } catch (SQLException e) {
+            throw new PayrollDatabaseException("Update Failed!");
+        }
     }
 }

@@ -138,8 +138,20 @@ public class EmployeePayrollServiceTest {
         try {
             employeePayrollService.readEmployeePayrollData(DB_IO);
             employeePayrollService.addEmployeeToPayroll("Shaheen", "F", 600000.00, LocalDate.now(),
-                    5,"Accenture",new int[]{1,3});
+                    6,"Accenture",new int[]{1,3});
             boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Shaheen");
+            Assert.assertTrue(result);
+        } catch (PayrollDatabaseException e) {
+            e.printStackTrace();
+        }
+    }
+    @Test
+    public void givenEmployee_WhenRemoved_ShouldSyncWithDB() {
+        EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+        try {
+            employeePayrollService.readEmployeePayrollData(DB_IO);
+            int result = employeePayrollService.removeEmployeeFromPayroll(7);
+            Assert.assertEquals(5,result);
         } catch (PayrollDatabaseException e) {
             e.printStackTrace();
         }

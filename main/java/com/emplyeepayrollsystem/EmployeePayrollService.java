@@ -106,4 +106,12 @@ public class EmployeePayrollService {
         employeePayrollDataList.add(employeePayrollDBService.addEmployeeToPayroll( name, gender, salary, startDate,
                 companyId,companyName,departmentId));
     }
+    //remove employee data from payroll
+    public  int removeEmployeeFromPayroll(int id) throws PayrollDatabaseException {
+        int affectedRow = employeePayrollDBService.removeEmployeeFromPayroll(id);
+        if(affectedRow == 0)
+            throw new PayrollDatabaseException("Update Failed");
+        else
+            return employeePayrollDBService.readData().size();
+    }
 }
