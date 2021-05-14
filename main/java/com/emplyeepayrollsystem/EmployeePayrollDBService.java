@@ -162,7 +162,7 @@ public class EmployeePayrollDBService {
     }
 
     // insert new employee to employee_payroll database after adding details to payroll_details DB
-    public EmployeePayrollData addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate,
+    public EmployeePayrollData addEmployeeToPayroll(String name, char gender, double salary, LocalDate startDate,
                                                     int companyId, String companyName, int[] departmentId)
             throws PayrollDatabaseException {
         int employeeId = -1;
@@ -221,9 +221,9 @@ public class EmployeePayrollDBService {
         }
         //insert into employee_department table
         try (Statement statement = connection.createStatement()) {
-            for (int i = 0; i < departmentId.length; i++) {
+            for (int id : departmentId) {
                 String sql = String.format("Insert Into employee_department (employee_id,department_id) values" +
-                        "(%s,%s)", employeeId, departmentId[i]);
+                        "(%s,%s)", employeeId, id);
                 statement.executeUpdate(sql);
             }
         } catch (SQLException e) {

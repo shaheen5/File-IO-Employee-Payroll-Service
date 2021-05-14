@@ -7,7 +7,7 @@ import java.util.Scanner;
 
 public class EmployeePayrollService {
 
-    public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
+       public enum IOService{CONSOLE_IO,FILE_IO,DB_IO,REST_IO}
     private List<EmployeePayrollData> employeePayrollDataList;
     private static EmployeePayrollDBService employeePayrollDBService;
 
@@ -54,7 +54,7 @@ public class EmployeePayrollService {
     public long count(IOService ioService) {
         if(ioService.equals(IOService.FILE_IO))
             return new EmployeePayrollFileIOService().countEntries();
-        return 0;
+        return employeePayrollDataList.size();
     }
 
     //method to print entries from a file
@@ -100,8 +100,8 @@ public class EmployeePayrollService {
         return null;
     }
     // add new employee to employee payroll
-    public void addEmployeeToPayroll(String name, String gender, double salary, LocalDate startDate,int companyId,
-                                     String companyName,int[] departmentId)
+    public void addEmployeeToPayroll(String name, char gender, double salary, LocalDate startDate, int companyId,
+                                     String companyName, int[] departmentId)
                                      throws PayrollDatabaseException {
         employeePayrollDataList.add(employeePayrollDBService.addEmployeeToPayroll( name, gender, salary, startDate,
                 companyId,companyName,departmentId));
@@ -114,4 +114,21 @@ public class EmployeePayrollService {
         else
             return employeePayrollDBService.readData().size();
     }
+    //add list of employees to payroll
+    public void addEmployeesToPayroll(List<EmployeePayrollData> asList) throws PayrollDatabaseException {
+        asList.forEach(employeePayrollData -> {
+            System.out.println("Employee Being added: "+employeePayrollData.name);
+            try {
+                this.addEmployeeToPayroll(employeePayrollData.name,employeePayrollData.gender,
+                        employeePayrollData.salary, employeePayrollData.startDate,employeePayrollData.companyId,
+                        employeePayrollData.companyName,employeePayrollData.departmentId);
+            } catch (PayrollDatabaseException e) {
+                e.printStackTrace();
+            }
+            System.out.println("Employee Added: "+employeePayrollData.name);
+        });
+        System.out.println(this.employeePayrollDataList);
+    }
+
+
 }

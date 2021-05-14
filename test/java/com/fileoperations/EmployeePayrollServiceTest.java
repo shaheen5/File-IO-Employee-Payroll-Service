@@ -6,6 +6,8 @@ import com.emplyeepayrollsystem.PayrollDatabaseException;
 import org.junit.Assert;
 import org.junit.Test;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -137,7 +139,7 @@ public class EmployeePayrollServiceTest {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         try {
             employeePayrollService.readEmployeePayrollData(DB_IO);
-            employeePayrollService.addEmployeeToPayroll("Shaheen", "F", 600000.00, LocalDate.now(),
+            employeePayrollService.addEmployeeToPayroll("Shaheen", 'F', 600000.00, LocalDate.now(),
                     6,"Accenture",new int[]{1,3});
             boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Shaheen");
             Assert.assertTrue(result);
@@ -155,5 +157,34 @@ public class EmployeePayrollServiceTest {
         } catch (PayrollDatabaseException e) {
             e.printStackTrace();
         }
+    }
+    @Test
+    public void given6Employees_WhenAddedToDB_ShouldMatchEmployeeEntries(){
+        EmployeePayrollData[] arrayOfEmps = {
+                new EmployeePayrollData(0, "Jeff Bezos", 'M', 100000.0, LocalDate.now(),
+                        2,"Infosys",new int[]{1,4}),
+                new EmployeePayrollData(0, "Bill Gates", 'M', 200000.0, LocalDate.now(),
+                        3,"Infosys",new int[]{1,2}),
+                new EmployeePayrollData(0, "Mark Zukeberg", 'M', 300000.0, LocalDate.now(),
+                        4,"TCS",new int[]{3}),
+                new EmployeePayrollData(0, "Sunder", 'M', 600000.0, LocalDate.now(),
+                        5,"HeadStrait Technology",new int[]{4}),
+                new EmployeePayrollData(0, "Mukesh", 'M', 100000.0, LocalDate.now(),
+                        6,"Accenture",new int[]{1,4}),
+                new EmployeePayrollData(0, "Anil", 'M', 200000.0, LocalDate.now(),
+                        7,"Atos",new int[]{2,3})
+        };
+        try{
+            EmployeePayrollService employeePayrollService = new EmployeePayrollService();
+            employeePayrollService.readEmployeePayrollData(DB_IO);
+            Instant start = Instant.now();
+            employeePayrollService.addEmployeesToPayroll(Arrays.asList(arrayOfEmps));
+            Instant end = Instant.now();
+            System.out.println("Duration without thread: "+ Duration.between(start, end));
+            Assert.assertEquals(7, employeePayrollService.count(DB_IO));
+        } catch (PayrollDatabaseException e) {
+            e.printStackTrace();
+        }
+
     }
 }

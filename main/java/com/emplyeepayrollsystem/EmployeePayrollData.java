@@ -10,7 +10,7 @@ public class EmployeePayrollData {
     LocalDate startDate;
     public int companyId;
     public String companyName;
-    int [] departmentId;
+    int [] departmentId = new int[]{0};
 
     public EmployeePayrollData(int id,String name,double salary){
         this.id=id;
