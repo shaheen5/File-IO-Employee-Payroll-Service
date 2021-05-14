@@ -90,7 +90,6 @@ public class EmployeePayrollServiceTest {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         try {
             List<EmployeePayrollData> employeePayrollDataList = employeePayrollService.readEmployeePayrollData(DB_IO);
-            employeePayrollService.updateEmployeeSalary("Terisa",400000.00);
             boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
             Assert.assertTrue(result);
         }catch (PayrollDatabaseException e){
@@ -102,7 +101,6 @@ public class EmployeePayrollServiceTest {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         try {
             employeePayrollService.readEmployeePayrollData(DB_IO);
-            employeePayrollService.updateEmployeeSalary("Terisa",400000.00);
             LocalDate startDate = LocalDate.of(2018,01,01);
             LocalDate endDate = LocalDate.now();
             List<EmployeePayrollData> employeePayrollDataList =
@@ -129,7 +127,6 @@ public class EmployeePayrollServiceTest {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         try {
             employeePayrollService.readEmployeePayrollData(DB_IO);
-            Map<String,Double> averageSalaryByGender = employeePayrollService.readAverageSalaryByGender(DB_IO);
             employeePayrollService.addEmployeeToPayroll("Mark","M",400000.00,LocalDate.now());
             boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
         }catch (PayrollDatabaseException e){

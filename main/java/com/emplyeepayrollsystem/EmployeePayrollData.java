@@ -5,8 +5,12 @@ import java.time.LocalDate;
 public class EmployeePayrollData {
     public int id;
     public String name;
+    char gender;
     public double salary;
     LocalDate startDate;
+    public int companyId;
+    public String companyName;
+    int [] departmentId;
 
     public EmployeePayrollData(int id,String name,double salary){
         this.id=id;
@@ -17,10 +21,26 @@ public class EmployeePayrollData {
        this(id, name, salary);
        this.startDate = startDate;
     }
-    @Override
-    public String toString(){
-        return "EmployeePayRollData [id="+id+" name="+name+" salary="+salary+"]";
+    public EmployeePayrollData(int id,String name,char gender,double salary,LocalDate startDate,
+                               int companyId,String companyName,int[] departmentId){
+        this(id, name, salary,startDate);
+        this.gender = gender;
+        this.companyId = companyId;
+        this.companyName = companyName;
+        this.departmentId = departmentId;
     }
+
+    @Override
+    public String toString() {
+        return "EmployeePayrollData{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", gender=" + gender +
+                ", salary=" + salary +
+                ", startDate=" + startDate +
+                '}';
+    }
+
     @Override
     public boolean equals(Object obj) {
         if(this == obj) return true;
@@ -28,6 +48,8 @@ public class EmployeePayrollData {
         EmployeePayrollData that = (EmployeePayrollData) obj;
         return id   ==  that.id &&
                 Double.compare(salary,that.salary)==0 &&
-                name.equals(that.name);
+                name.equals(that.name) &&
+                gender == that.gender &&
+                startDate.equals(that.startDate);
     }
 }
