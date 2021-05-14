@@ -50,10 +50,26 @@ public class EmployeePayrollDBService {
             PreparedStatement preparedStatement = connection.prepareStatement(sql);
             preparedStatement.setDouble(1, salary);
             preparedStatement.setString(2, name);
-            return preparedStatement.executeUpdate();
+            preparedStatement.executeUpdate();
+            return this.updatePayrollDetails(salary);
         } catch (SQLException e) {
             throw new PayrollDatabaseException("Connection Error Occurred!");
         }
+    }
+    //update payroll details when salary is updated simultaneously
+    private int updatePayrollDetails(double salary) throws PayrollDatabaseException {
+        try (Connection connection = this.getConnection()) {
+            Statement statement = connection.createStatement();
+            double deductions = salary * 0.2;
+            double taxablePay = salary - deductions;
+            double tax = taxablePay * 0.1;
+            double netPay = salary - tax;
+            String sql = String.format("UPDATE payroll_details SET basic_pay = %s,deductions = %s," +
+                    "taxable_pay=%s,tax=%s,net_pay=%s ;",salary,deductions,taxablePay,tax,netPay);
+            return statement.executeUpdate(sql);
+        } catch (SQLException ex) {
+                throw new PayrollDatabaseException("Update To Database Failed!");
+            }
     }
 
     //update salary using statement object

@@ -90,7 +90,8 @@ public class EmployeePayrollServiceTest {
         EmployeePayrollService employeePayrollService = new EmployeePayrollService();
         try {
             List<EmployeePayrollData> employeePayrollDataList = employeePayrollService.readEmployeePayrollData(DB_IO);
-            boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Terisa");
+            employeePayrollService.updateEmployeeSalary("Terisa",400000.00);
+            boolean result = employeePayrollService.checkEmployeePayrollInSyncWithDB("Mark");
             Assert.assertTrue(result);
         }catch (PayrollDatabaseException e){
             e.printStackTrace();
